@@ -2032,7 +2032,7 @@ namespace StardewModdingAPI.Framework
 #if SMAPI_DEPRECATED
                             contentHelper,
 #endif
-                            gameContentHelper, modContentHelper, contentPackHelper, commandHelper, dataHelper, modRegistryHelper, reflectionHelper, multiplayerHelper, translationHelper);
+                            gameContentHelper, modContentHelper, contentPackHelper, commandHelper, dataHelper, modRegistryHelper, reflectionHelper, multiplayerHelper, translationHelper, this.Settings.GenerateConfigSchemas);
                     }
 
                     // init mod
