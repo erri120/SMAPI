@@ -26,7 +26,8 @@ namespace StardewModdingAPI.Framework.Models
             [nameof(RewriteMods)] = true,
             [nameof(FixHarmony)] = true,
             [nameof(UseCaseInsensitivePaths)] = Constants.Platform is Platform.Android or Platform.Linux,
-            [nameof(SuppressHarmonyDebugMode)] = true
+            [nameof(SuppressHarmonyDebugMode)] = true,
+            [nameof(GenerateConfigSchemas)] = false,
         };
 
         /// <summary>The default values for <see cref="SuppressUpdateChecks"/>, to log changes if different.</summary>
@@ -99,6 +100,8 @@ namespace StardewModdingAPI.Framework.Models
         /// <summary>The mod IDs SMAPI should load after any other mods.</summary>
         public HashSet<string> ModsToLoadLate { get; set; }
 
+        /// <summary>Whether to generate config.schema.json files for external tools like mod managers.</summary>
+        public bool GenerateConfigSchemas { get; set; }
 
         /********
         ** Public methods
@@ -122,7 +125,8 @@ namespace StardewModdingAPI.Framework.Models
         /// <param name="suppressUpdateChecks"><inheritdoc cref="SuppressUpdateChecks" path="/summary" /></param>
         /// <param name="modsToLoadEarly"><inheritdoc cref="ModsToLoadEarly" path="/summary" /></param>
         /// <param name="modsToLoadLate"><inheritdoc cref="ModsToLoadLate" path="/summary" /></param>
-        public SConfig(bool developerMode, bool? checkForUpdates, bool? listenForConsoleInput, bool? paranoidWarnings, bool? useBetaChannel, string gitHubProjectName, string webApiBaseUrl, string[]? verboseLogging, bool? rewriteMods, bool? fixHarmony, bool? useCaseInsensitivePaths, bool? logNetworkTraffic, bool? logTechnicalDetailsForBrokenMods, ColorSchemeConfig consoleColors, bool? suppressHarmonyDebugMode, string[]? suppressUpdateChecks, string[]? modsToLoadEarly, string[]? modsToLoadLate)
+        /// <param name="generateConfigSchemas"><inheritdoc cref="GenerateConfigSchemas" path="/summary" /></param>
+        public SConfig(bool developerMode, bool? checkForUpdates, bool? listenForConsoleInput, bool? paranoidWarnings, bool? useBetaChannel, string gitHubProjectName, string webApiBaseUrl, string[]? verboseLogging, bool? rewriteMods, bool? fixHarmony, bool? useCaseInsensitivePaths, bool? logNetworkTraffic, bool? logTechnicalDetailsForBrokenMods, ColorSchemeConfig consoleColors, bool? suppressHarmonyDebugMode, string[]? suppressUpdateChecks, string[]? modsToLoadEarly, string[]? modsToLoadLate, bool? generateConfigSchemas)
         {
             this.DeveloperMode = developerMode;
             this.CheckForUpdates = checkForUpdates ?? (bool)SConfig.DefaultValues[nameof(this.CheckForUpdates)];
@@ -142,6 +146,7 @@ namespace StardewModdingAPI.Framework.Models
             this.SuppressUpdateChecks = new HashSet<string>(suppressUpdateChecks ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
             this.ModsToLoadEarly = new HashSet<string>(modsToLoadEarly ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
             this.ModsToLoadLate = new HashSet<string>(modsToLoadLate ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+            this.GenerateConfigSchemas = generateConfigSchemas ?? (bool)SConfig.DefaultValues[nameof(this.GenerateConfigSchemas)];
         }
 
         /// <summary>Override the value of <see cref="DeveloperMode"/>.</summary>
