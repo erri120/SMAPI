@@ -14,18 +14,25 @@ namespace StardewModdingAPI.Toolkit.Serialization
     public class JsonHelper
     {
         /*********
+        ** Fields
+        *********/
+        /// <summary>The JSON schema generator to use when creating a schema file.</summary>
+        private readonly JSchemaGenerator SchemaGenerator = new();
+
+        /// <summary>The JSON settings to use when creating a schema file.</summary>
+        private readonly JSchemaWriterSettings SchemaWriterSettings = new()
+        {
+            Version = SchemaVersion.Draft2019_09,
+            ReferenceHandling = JSchemaWriterReferenceHandling.Never
+        };
+
+
+        /*********
         ** Accessors
         *********/
         /// <summary>The JSON settings to use when serializing and deserializing files.</summary>
         public JsonSerializerSettings JsonSettings { get; } = JsonHelper.CreateDefaultSettings();
 
-        private readonly JSchemaGenerator _schemaGenerator = new();
-
-        private readonly JSchemaWriterSettings _schemaWriterSettings = new()
-        {
-            Version = SchemaVersion.Draft2019_09,
-            ReferenceHandling = JSchemaWriterReferenceHandling.Never
-        };
 
         /*********
         ** Public methods
@@ -109,9 +116,7 @@ namespace StardewModdingAPI.Toolkit.Serialization
                 throw new ArgumentException("The file path is empty or invalid.", nameof(fullPath));
 
             // create directory if needed
-            string dir = Path.GetDirectoryName(fullPath)!;
-            if (dir == null)
-                throw new ArgumentException("The file path is invalid.", nameof(fullPath));
+            string dir = Path.GetDirectoryName(fullPath) ?? throw new ArgumentException("The file path is invalid.", nameof(fullPath));
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
@@ -120,7 +125,7 @@ namespace StardewModdingAPI.Toolkit.Serialization
             File.WriteAllText(fullPath, json);
         }
 
-        /// <summary>Generate a schema and save to a JSON file.</summary>
+        /// <summary>Save a data model schema to a JSON file.</summary>
         /// <typeparam name="TModel">The model type.</typeparam>
         /// <param name="fullPath">The absolute file path.</param>
         /// <exception cref="InvalidOperationException">The given path is empty or invalid.</exception>
@@ -132,16 +137,14 @@ namespace StardewModdingAPI.Toolkit.Serialization
                 throw new ArgumentException("The file path is empty or invalid.", nameof(fullPath));
 
             // create directory if needed
-            string dir = Path.GetDirectoryName(fullPath)!;
-            if (dir == null)
-                throw new ArgumentException("The file path is invalid.", nameof(fullPath));
+            string dir = Path.GetDirectoryName(fullPath) ?? throw new ArgumentException("The file path is invalid.", nameof(fullPath));
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            JSchema schema = this._schemaGenerator.Generate(typeof(TModel));
-            string output = schema.ToString(this._schemaWriterSettings);
-
-            File.WriteAllText(fullPath, output);
+            // write file
+            JSchema schema = this.SchemaGenerator.Generate(typeof(TModel));
+            string json = schema.ToString(this.SchemaWriterSettings);
+            File.WriteAllText(fullPath, json);
         }
 
         /// <summary>Deserialize JSON text if possible.</summary>

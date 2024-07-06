@@ -11,8 +11,9 @@ namespace StardewModdingAPI.Framework.ModHelpers
         /*********
         ** Fields
         *********/
-        /// <summary>Whether to generate config.schema.json files.</summary>
-        private readonly bool _generateConfigSchemas;
+        /// <summary>Whether to generate a <c>config.schema.json</c> file based on the mod's config model when it's loaded or saved.</summary>
+        private readonly bool GenerateConfigSchema;
+
 
         /*********
         ** Accessors
@@ -71,10 +72,10 @@ namespace StardewModdingAPI.Framework.ModHelpers
         /// <param name="reflectionHelper">An API for accessing private game code.</param>
         /// <param name="multiplayer">Provides multiplayer utilities.</param>
         /// <param name="translationHelper">An API for reading translations stored in the mod's <c>i18n</c> folder.</param>
-        /// <param name="generateConfigSchemas">Whether to generate config.schema.json files.</param>
+        /// <param name="generateConfigSchema">Whether to generate a <c>config.schema.json</c> file based on the mod's config model when it's loaded or saved.</param>
         /// <exception cref="ArgumentNullException">An argument is null or empty.</exception>
         /// <exception cref="InvalidOperationException">The <paramref name="modDirectory"/> path does not exist on disk.</exception>
-        public ModHelper(IModMetadata mod, string modDirectory, Func<SInputState> currentInputState, IModEvents events, IGameContentHelper gameContentHelper, IModContentHelper modContentHelper, IContentPackHelper contentPackHelper, ICommandHelper commandHelper, IDataHelper dataHelper, IModRegistry modRegistry, IReflectionHelper reflectionHelper, IMultiplayerHelper multiplayer, ITranslationHelper translationHelper, bool generateConfigSchemas)
+        public ModHelper(IModMetadata mod, string modDirectory, Func<SInputState> currentInputState, IModEvents events, IGameContentHelper gameContentHelper, IModContentHelper modContentHelper, IContentPackHelper contentPackHelper, ICommandHelper commandHelper, IDataHelper dataHelper, IModRegistry modRegistry, IReflectionHelper reflectionHelper, IMultiplayerHelper multiplayer, ITranslationHelper translationHelper, bool generateConfigSchema)
             : base(mod)
         {
             // validate directory
@@ -96,7 +97,7 @@ namespace StardewModdingAPI.Framework.ModHelpers
             this.Multiplayer = multiplayer ?? throw new ArgumentNullException(nameof(multiplayer));
             this.Translation = translationHelper ?? throw new ArgumentNullException(nameof(translationHelper));
             this.Events = events;
-            this._generateConfigSchemas = generateConfigSchemas;
+            this.GenerateConfigSchema = generateConfigSchema;
         }
 
         /****
@@ -108,12 +109,6 @@ namespace StardewModdingAPI.Framework.ModHelpers
         {
             TConfig config = this.Data.ReadJsonFile<TConfig>("config.json") ?? new TConfig();
             this.WriteConfig(config); // create file or fill in missing fields
-
-            if (this._generateConfigSchemas)
-            {
-                this.WriteConfigSchema(config);
-            }
-
             return config;
         }
 
@@ -122,12 +117,9 @@ namespace StardewModdingAPI.Framework.ModHelpers
             where TConfig : class, new()
         {
             this.Data.WriteJsonFile("config.json", config);
-        }
 
-        private void WriteConfigSchema<TConfig>(TConfig config)
-            where TConfig : class, new()
-        {
-            this.Data.WriteJsonSchemaFile("config.schema.json", config);
+            if (this.GenerateConfigSchema)
+                this.Data.WriteJsonSchemaFile<TConfig>("config.schema.json");
         }
 
         /****

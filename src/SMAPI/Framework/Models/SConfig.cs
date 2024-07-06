@@ -27,7 +27,7 @@ namespace StardewModdingAPI.Framework.Models
             [nameof(FixHarmony)] = true,
             [nameof(UseCaseInsensitivePaths)] = Constants.Platform is Platform.Android or Platform.Linux,
             [nameof(SuppressHarmonyDebugMode)] = true,
-            [nameof(GenerateConfigSchemas)] = false,
+            [nameof(GenerateConfigSchemas)] = false
         };
 
         /// <summary>The default values for <see cref="SuppressUpdateChecks"/>, to log changes if different.</summary>
@@ -100,8 +100,9 @@ namespace StardewModdingAPI.Framework.Models
         /// <summary>The mod IDs SMAPI should load after any other mods.</summary>
         public HashSet<string> ModsToLoadLate { get; set; }
 
-        /// <summary>Whether to generate config.schema.json files for external tools like mod managers.</summary>
+        /// <summary>Whether to generate <c>config.schema.json</c> files for external tools like mod managers.</summary>
         public bool GenerateConfigSchemas { get; set; }
+
 
         /********
         ** Public methods

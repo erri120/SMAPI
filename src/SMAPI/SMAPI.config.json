@@ -172,5 +172,12 @@ in future SMAPI versions.
      * the mod author.
      */
     "ModsToLoadEarly": [],
-    "ModsToLoadLate": []
+    "ModsToLoadLate": [],
+
+    /**
+     * Whether to generate a `config.schema.json` file next to each mod's `config.json` file.
+     *
+     * This can be used by separate tools like mod managers to enable config editing features.
+    */
+    "GenerateConfigSchemas": false
 }
