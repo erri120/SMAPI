@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
+using NJsonSchema;
 using StardewModdingAPI.Toolkit.Serialization.Converters;
 
 namespace StardewModdingAPI.Toolkit.Serialization
@@ -13,20 +11,6 @@ namespace StardewModdingAPI.Toolkit.Serialization
     /// <summary>Encapsulates SMAPI's JSON file parsing.</summary>
     public class JsonHelper
     {
-        /*********
-        ** Fields
-        *********/
-        /// <summary>The JSON schema generator to use when creating a schema file.</summary>
-        private readonly JSchemaGenerator SchemaGenerator = new();
-
-        /// <summary>The JSON settings to use when creating a schema file.</summary>
-        private readonly JSchemaWriterSettings SchemaWriterSettings = new()
-        {
-            Version = SchemaVersion.Draft2019_09,
-            ReferenceHandling = JSchemaWriterReferenceHandling.Never
-        };
-
-
         /*********
         ** Accessors
         *********/
@@ -61,7 +45,7 @@ namespace StardewModdingAPI.Toolkit.Serialization
         /// <exception cref="JsonReaderException">The file contains invalid JSON.</exception>
         public bool ReadJsonFileIfExists<TModel>(string fullPath,
 #if NET6_0_OR_GREATER
-            [NotNullWhen(true)]
+            [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
             out TModel? result
         )
@@ -142,8 +126,8 @@ namespace StardewModdingAPI.Toolkit.Serialization
                 Directory.CreateDirectory(dir);
 
             // write file
-            JSchema schema = this.SchemaGenerator.Generate(typeof(TModel));
-            string json = schema.ToString(this.SchemaWriterSettings);
+            JsonSchema schema = JsonSchema.FromType<TModel>();
+            string json = schema.ToJson();
             File.WriteAllText(fullPath, json);
         }
 
